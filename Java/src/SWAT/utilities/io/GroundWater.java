@@ -64,7 +64,8 @@ public final class GroundWater {
     public GroundWater() {
         this.values = new EnumMap(fields.class);
     }
-    public GroundWater(String filename) throws IOException {
+    public GroundWater(String filename)
+            throws IOException {
         this.values = new EnumMap(fields.class);
         this.readSWATFileFormat(filename);
     }
@@ -93,7 +94,8 @@ public final class GroundWater {
                 .setALPHA_BF_D(ALPHA_BF_D);
     }
     
-    public final GroundWater set(GroundWater.fields fieldName, Object value) throws IllegalArgumentException {
+    public final GroundWater set(GroundWater.fields fieldName, Object value)
+            throws IllegalArgumentException {
         // Checking if the provided value has proper type and limits
         if (value.getClass().equals(fieldName.getFieldClassType())) {
             values.put(fieldName,value);
@@ -110,7 +112,8 @@ public final class GroundWater {
         return set(fields.valueOf(fieldNameStr), value);
     }
     
-    public Object get(GroundWater.fields fieldName) throws NullPointerException {
+    public Object get(GroundWater.fields fieldName)
+            throws NullPointerException {
         return values.get(fieldName);
     }
     public Object get(String fieldNameStr) {
@@ -221,10 +224,12 @@ public final class GroundWater {
         return set(GroundWater.fields.ALPHA_BF_D,v);
     }
     
-    public boolean contains(GroundWater.fields fieldName) throws IllegalArgumentException {
+    public boolean contains(GroundWater.fields fieldName)
+            throws IllegalArgumentException {
         return values.containsKey(fieldName);
     }
-    public boolean contains(String fieldNameStr) throws IllegalArgumentException {
+    public boolean contains(String fieldNameStr)
+            throws IllegalArgumentException {
         return values.containsKey(GroundWater.fields.valueOf(fieldNameStr));
     }
     public boolean containsAllFields() {
@@ -250,7 +255,8 @@ public final class GroundWater {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
 
-    public GroundWater readSWATFileFormat(String filename) throws IOException {
+    public GroundWater readSWATFileFormat(String filename)
+            throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.UTF_8)) {
             String line;
             for (fields key: fields.values()) {
@@ -266,16 +272,19 @@ public final class GroundWater {
         }
         return this;
     }
-    public void writeSWATFileFormat(String filename) throws IOException {
+    public void writeSWATFileFormat(String filename)
+            throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.UTF_8)) {
             writer.write(this.toSWATTXTFormat());
         }
     }
-    public static GroundWater newFromSWATFile(String filename) throws IOException {
+    public static GroundWater newFromSWATFile(String filename)
+            throws IOException {
         GroundWater gw = new GroundWater();
         return gw.readSWATFileFormat(filename);
     }
-    public static ArrayList<GroundWater> newFromSWATFiles(String[] filenames) throws IOException {
+    public static ArrayList<GroundWater> newFromSWATFiles(String[] filenames)
+            throws IOException {
         ArrayList<GroundWater> gws = new ArrayList();
         for (String filename: filenames){
             gws.add(newFromSWATFile(filename));
@@ -287,7 +296,8 @@ public final class GroundWater {
     public String toString() {
         return this.toJSONString();
     }
-    public String toString(String stringOutputType) throws IllegalArgumentException{
+    public String toString(String stringOutputType)
+            throws IllegalArgumentException{
         switch (stringOutputType){
             case "JSON":
                 return this.toJSONString();

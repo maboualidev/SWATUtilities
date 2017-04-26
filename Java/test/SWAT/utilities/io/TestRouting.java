@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 
 /**
@@ -91,11 +92,31 @@ public class TestRouting {
         rte.writeSWATFileFormat("D:\\test.rte");
         
     }
+    public static void test2() throws IOException {
+        System.out.println("\nTEST 2: Reading multiple files and writing them to a new location.");
+        
+        String[] filenames = new String[10];
+        for (int idx=0; idx<filenames.length;idx++){
+            filenames[idx] = String.format("..\\..\\SampleFiles\\RTE\\000%02d0000.rte",idx+1);
+        }
+        
+        System.out.println("Reading all 10 files ...");
+        ArrayList<Routing> rtes = Routing.newFromSWATFiles(filenames);
+        
+        System.out.println("Changing GWHT of the files ...");
+        for (int idx = 0; idx<filenames.length; idx++) {
+            rtes.get(idx).setCHW2(idx+1);
+            String outFilename = String.format("D:\\test%02d.rte", idx);
+            System.out.printf("Writing %s ...\n", outFilename);
+            rtes.get(idx).writeSWATFileFormat(outFilename);
+        }
+        System.out.println("END OF TEST 2\n");
+    }
     public static void main(String[] args) throws IOException {
         System.out.println("Testing SWAT.utilities.io.Routing");
         //test0();
         test1();
-        
+        test2();
         
 //        EnumMap<Routing.fields,Object> a = new EnumMap(Routing.fields.class);
 //        Double[] v = new Double[12];

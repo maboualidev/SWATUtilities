@@ -44,7 +44,7 @@ public final class Routing {
         CH_BED_D50(Double.class,"CH_BED_D50 : D50 Median particle size diameter of channel bed sediment (µm)"),
         CH_BNK_TC(Double.class,"CH_BNK_TC : Critical shear stress of channel bank (N/m2)"),
         CH_BED_TC(Double.class,"CH_BED_TC : Critical shear stress of channel bed (N/m2)"),
-        CH_ERODMO((new Double[1]).getClass(),"CH_ERODMO : Resistance to erosion"),
+        CH_ERODMO((new Double[0]).getClass(),"CH_ERODMO : Resistance to erosion"),
         CH_EQN(Double.class,"CH_EQN : Sediment routing methods");
         
         private final Class classType;
@@ -71,8 +71,14 @@ public final class Routing {
     public Routing() {
         this.values = new EnumMap(Routing.fields.class);
     }
+    public Routing(String filename)
+            throws IOException {
+        this.values = new EnumMap(fields.class);
+        this.readSWATFileFormat(filename);
+    }
     
-    public final Routing set(Routing.fields fieldName, Object value) throws IllegalArgumentException {
+    public final Routing set(Routing.fields fieldName, Object value)
+            throws IllegalArgumentException {
         if (value.getClass().equals(fieldName.getFieldClassType())) {
             values.put(fieldName,value);
         } else {
@@ -84,7 +90,8 @@ public final class Routing {
         }
         return this;
     }
-    public final Routing set(Routing.fields fieldName, Object value, int idx) throws IllegalArgumentException {
+    public final Routing set(Routing.fields fieldName, Object value, int idx)
+            throws IllegalArgumentException {
         // CH_ERODMO Needs to be handled differently
         if (fieldName.equals(fields.CH_ERODMO)) {
             if ((value.getClass().equals(Double.class)) && idx>=0 && idx<12) {
@@ -116,13 +123,15 @@ public final class Routing {
         return this.set(Routing.fields.valueOf(fieldNameStr), value,idx);
     }
     
-    public Object get(Routing.fields fieldName) throws NullPointerException {
+    public Object get(Routing.fields fieldName)
+            throws NullPointerException {
         return values.get(fieldName);
     }
     public Object get(String fieldNameStr) {
         return values.get(Routing.fields.valueOf(fieldNameStr));
     }
-    public Object get(Routing.fields fieldName,int idx) throws NullPointerException,IllegalArgumentException {
+    public Object get(Routing.fields fieldName,int idx)
+            throws NullPointerException,IllegalArgumentException {
         if (fieldName.equals(fields.CH_ERODMO)) {
             if (idx>=0 && idx<12){
                 return (Object) ((Double[]) values.get(fields.CH_ERODMO))[idx];
@@ -313,10 +322,12 @@ public final class Routing {
         return set(Routing.fields.CH_EQN,v);
     }
     
-    public boolean contains(Routing.fields fieldName) throws IllegalArgumentException {
+    public boolean contains(Routing.fields fieldName)
+            throws IllegalArgumentException {
         return values.containsKey(fieldName);
     }
-    public boolean contains(String fieldNameStr) throws IllegalArgumentException {
+    public boolean contains(String fieldNameStr)
+            throws IllegalArgumentException {
         return values.containsKey(Routing.fields.valueOf(fieldNameStr));
     }
     public boolean containsAllFields() {
@@ -342,7 +353,8 @@ public final class Routing {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
     
-    public Routing readSWATFileFormat(String filename) throws IOException {
+    public Routing readSWATFileFormat(String filename)
+            throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.ISO_8859_1)) {
             String line;
             for (Routing.fields key: Routing.fields.values()) {
@@ -367,14 +379,24 @@ public final class Routing {
         }
         return this;
     }
-    public void writeSWATFileFormat(String filename) throws IOException {
+    public void writeSWATFileFormat(String filename)
+            throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.ISO_8859_1)) {
             writer.write(this.toSWATTXTFormat());
         }
     }
-    public static Routing newFromSWATFile(String filename) throws IOException {
+    public static Routing newFromSWATFile(String filename)
+            throws IOException {
         Routing rte = new Routing();
         return rte.readSWATFileFormat(filename);
+    }
+    public static ArrayList<Routing> newFromSWATFiles(String[] filenames)
+            throws IOException {
+        ArrayList<Routing> rtes = new ArrayList();
+        for (String filename: filenames){
+            rtes.add(newFromSWATFile(filename));
+        }
+        return rtes;
     }
     
     @Override

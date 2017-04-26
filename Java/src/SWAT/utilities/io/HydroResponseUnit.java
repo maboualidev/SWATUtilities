@@ -86,12 +86,14 @@ public final class HydroResponseUnit {
     public HydroResponseUnit() {
         this.values = new EnumMap(HydroResponseUnit.fields.class);
     }
-    public HydroResponseUnit(String filename) throws IOException {
+    public HydroResponseUnit(String filename)
+            throws IOException {
         this.values = new EnumMap(fields.class);
         this.readSWATFileFormat(filename);
     }
     
-    public final HydroResponseUnit set(fields fieldName, Object value) throws IllegalArgumentException {
+    public final HydroResponseUnit set(fields fieldName, Object value)
+            throws IllegalArgumentException {
         // Checking if the provided value has proper type and limits
         if (value.getClass().equals(fieldName.getFieldClassType())) {
             values.put(fieldName,value);
@@ -108,7 +110,8 @@ public final class HydroResponseUnit {
         return set(HydroResponseUnit.fields.valueOf(fieldNameStr), value);
     }
     
-    public Object get(HydroResponseUnit.fields fieldName) throws NullPointerException {
+    public Object get(HydroResponseUnit.fields fieldName)
+            throws NullPointerException {
         return values.get(fieldName);
     }
     public Object get(String fieldNameStr) {
@@ -351,10 +354,12 @@ public final class HydroResponseUnit {
             return set(HydroResponseUnit.fields.POT_K,v);
     }
 
-    public boolean contains(HydroResponseUnit.fields fieldName) throws IllegalArgumentException {
+    public boolean contains(HydroResponseUnit.fields fieldName)
+            throws IllegalArgumentException {
         return values.containsKey(fieldName);
     }
-    public boolean contains(String fieldNameStr) throws IllegalArgumentException {
+    public boolean contains(String fieldNameStr)
+            throws IllegalArgumentException {
         return values.containsKey(HydroResponseUnit.fields.valueOf(fieldNameStr));
     }
     public boolean containsAllFields() {
@@ -380,7 +385,8 @@ public final class HydroResponseUnit {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
 
-    public HydroResponseUnit readSWATFileFormat(String filename) throws IOException {
+    public HydroResponseUnit readSWATFileFormat(String filename)
+            throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.UTF_8)) {
             String line;
             for (HydroResponseUnit.fields key: HydroResponseUnit.fields.values()) {
@@ -412,16 +418,19 @@ public final class HydroResponseUnit {
         }
         return this;
     }
-    public void writeSWATFileFormat(String filename) throws IOException {
+    public void writeSWATFileFormat(String filename)
+            throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.UTF_8)) {
             writer.write(this.toSWATTXTFormat());
         }
     }
-    public static HydroResponseUnit newFromSWATFile(String filename) throws IOException {
+    public static HydroResponseUnit newFromSWATFile(String filename)
+            throws IOException {
         HydroResponseUnit hru = new HydroResponseUnit();
         return hru.readSWATFileFormat(filename);
     }
-    public static ArrayList<HydroResponseUnit> newFromSWATFiles(String[] filenames) throws IOException {
+    public static ArrayList<HydroResponseUnit> newFromSWATFiles(String[] filenames)
+            throws IOException {
         ArrayList<HydroResponseUnit> hrus = new ArrayList();
         for (String filename: filenames){
             hrus.add(newFromSWATFile(filename));
@@ -433,7 +442,8 @@ public final class HydroResponseUnit {
     public String toString() {
         return this.toJSONString();
     }
-    public String toString(String stringOutputType) throws IllegalArgumentException{
+    public String toString(String stringOutputType)
+            throws IllegalArgumentException{
         switch (stringOutputType){
             case "JSON":
                 return this.toJSONString();

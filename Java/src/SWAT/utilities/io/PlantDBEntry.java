@@ -176,7 +176,8 @@ public final class PlantDBEntry {
      *         multiple <code>set()</code> commands
      * @throws IllegalArgumentException 
      */
-    public final PlantDBEntry set(PlantDBEntry.fields fieldName, Object value) throws IllegalArgumentException {
+    public final PlantDBEntry set(PlantDBEntry.fields fieldName, Object value)
+            throws IllegalArgumentException {
         // Checking if the provided value has proper type and limits
         if (value.getClass().equals(fieldName.getFieldClassType())) {
             if (fieldName.isLimited()) {
@@ -232,7 +233,8 @@ public final class PlantDBEntry {
         return set(fields.valueOf(fieldNameStr), value);
     }
     
-    public Object get(fields fieldName) throws NullPointerException {
+    public Object get(fields fieldName)
+            throws NullPointerException {
         return values.get(fieldName);
     }
     public Object get(String fieldNameStr) {
@@ -490,10 +492,12 @@ public final class PlantDBEntry {
         return set(PlantDBEntry.fields.RSR2C,v);
     }
     
-    public boolean contains(PlantDBEntry.fields fieldName) throws IllegalArgumentException {
+    public boolean contains(PlantDBEntry.fields fieldName)
+            throws IllegalArgumentException {
         return values.containsKey(fieldName);
     }
-    public boolean contains(String fieldNameStr) throws IllegalArgumentException {
+    public boolean contains(String fieldNameStr)
+            throws IllegalArgumentException {
         return values.containsKey(PlantDBEntry.fields.valueOf(fieldNameStr));
     }
     public boolean containsAllFields() {
@@ -523,7 +527,8 @@ public final class PlantDBEntry {
     public String toString() {
         return this.toJSONString();
     }
-    public String toString(String stringOutputType) throws IllegalArgumentException{
+    public String toString(String stringOutputType)
+            throws IllegalArgumentException{
         switch (stringOutputType){
             case "JSON":
                 return this.toJSONString();
@@ -534,7 +539,8 @@ public final class PlantDBEntry {
         }
             
     }
-    public final String toJSONString() throws NullPointerException {        
+    public final String toJSONString()
+            throws NullPointerException {        
         String strFMT = "{ICNUM: %d,CPNM: \"%s\",IDC: %d,BIO_E: %f,HVSTI: %f, BLAI: %f, FRGRW1: %f, LAIMX1: %f,FRGRW2: %f, LAIMX2: %f, DLAI: %f, CHTMX: %f, RDMX: %f,T_OPT: %f,T_BASE: %f,CNYLD: %f,CPYLD: %f,PLTNFR1: %f,PLTNFR2: %f,PLTNFR3: %f,PLTPFR1: %f,PLTPFR2: %f,PLTPFR3: %f,WSYF: %f,USLE_C: %f,GSI: %f,VPDFR: %f,FRGMAX: %f,WAVP: %f,CO2HI: %f,BIOEHI: %f,RSDCO_PL: %f,ALAI_MIN: %f,BIO_LEAF: %f,MAT_YRS: %d,BMX_TREES: %f,EXT_COEF: %f,BMDIEOFF: %f";
         StringBuilder resultStrBuilder = new StringBuilder(String.format(
                 strFMT,
@@ -561,7 +567,8 @@ public final class PlantDBEntry {
         
         return resultStrBuilder.append("}").toString();
     }
-    public final String toSWATTXTFormat() throws NullPointerException{
+    public final String toSWATTXTFormat()
+            throws NullPointerException{
         String strFMT = "%d %4s %d\n%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n%.4f %d %.4f %.4f %.4f";
         
         StringBuilder resultStrBuilder = new StringBuilder(String.format(
