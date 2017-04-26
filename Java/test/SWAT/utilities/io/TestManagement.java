@@ -33,7 +33,8 @@ public class TestManagement {
         System.out.println("Writing the new file to D:\\test.mgt");
         mgt.writeSWATFileFormat("D:\\test.mgt");
         
-        Management mgt2 = new Management("D:\\test.mgt");
+        
+        
         
 //        mgt.readSWATFileFormat(filename);
         

@@ -339,10 +339,34 @@ public final class Management {
             writer.write(this.toSWATTXTFormat());
         }
     }
+    public static Management newFromSWATFile(String filename)
+            throws IOException {
+        Management mgt = new Management();
+        return mgt.readSWATFileFormat(filename);
+    }
+    public static ArrayList<Management> newFromSWATFiles(String[] filenames)
+            throws IOException {
+        ArrayList<Management> mgts = new ArrayList();
+        for (String filename: filenames){
+            mgts.add(newFromSWATFile(filename));
+        }
+        return mgts;
+    }
     
     @Override
     public String toString() {
         return this.toJSONString();
+    }
+    public String toString(String stringOutputType) throws IllegalArgumentException{
+        switch (stringOutputType){
+            case "JSON":
+                return this.toJSONString();
+            case "SWAT":
+                return this.toSWATTXTFormat();
+            default:
+                throw new IllegalArgumentException(String.format("String output Type could be: 1) JSON, (2) SWAT; But got %s", stringOutputType));
+        }
+            
     }
     public String toJSONString(){
         if (this.containsAllFields()) {
@@ -426,6 +450,4 @@ public final class Management {
             return null;
         }
     }
-    
-    
 }
