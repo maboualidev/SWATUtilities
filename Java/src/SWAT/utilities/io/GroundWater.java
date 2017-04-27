@@ -19,7 +19,8 @@ import java.util.List;
  *
  * @author mabouali
  */
-public final class GroundWater {
+public final class GroundWater
+        implements SWATFormatInput<GroundWater,GroundWater.fields> {
     public static enum fields {
         TITLE(String.class,""),
         SHALLST(Double.class,"SHALLST : Initial depth of water in the shallow aquifer [mm]"),
@@ -93,6 +94,7 @@ public final class GroundWater {
                 .setALPHA_BF_D(ALPHA_BF_D);
     }
     
+    @Override
     public final GroundWater set(GroundWater.fields fieldName, Object value)
             throws IllegalArgumentException {
         // Checking if the provided value has proper type and limits
@@ -107,14 +109,17 @@ public final class GroundWater {
         }
         return this;
     }
+    @Override
     public final GroundWater set(String fieldNameStr, Object value) {
         return set(fields.valueOf(fieldNameStr), value);
     }
     
+    @Override
     public Object get(GroundWater.fields fieldName)
             throws NullPointerException {
         return values.get(fieldName);
     }
+    @Override
     public Object get(String fieldNameStr) {
         return values.get(GroundWater.fields.valueOf(fieldNameStr));
     }
@@ -254,6 +259,7 @@ public final class GroundWater {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
 
+    @Override
     public GroundWater readSWATFileFormat(String filename)
             throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -271,6 +277,7 @@ public final class GroundWater {
         }
         return this;
     }
+    @Override
     public void writeSWATFileFormat(String filename)
             throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -282,7 +289,7 @@ public final class GroundWater {
         GroundWater gw = new GroundWater();
         return gw.readSWATFileFormat(filename);
     }
-    public static ArrayList<GroundWater> newFromSWATFiles(String[] filenames)
+    public static List<GroundWater> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<GroundWater> gws = new ArrayList();
         for (String filename: filenames){

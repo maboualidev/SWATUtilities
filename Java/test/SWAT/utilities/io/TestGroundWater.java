@@ -6,7 +6,7 @@
 package SWAT.utilities.io;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -41,7 +41,7 @@ public final class TestGroundWater {
         }
         
         System.out.println("Reading all 10 files ...");
-        ArrayList<GroundWater> gws = GroundWater.newFromSWATFiles(filenames);
+        List<GroundWater> gws = GroundWater.newFromSWATFiles(filenames);
         
         System.out.println("Changing GWHT of the files ...");
         for (int idx = 0; idx<filenames.length; idx++) {

@@ -6,7 +6,7 @@
 package SWAT.utilities.io;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -42,7 +42,7 @@ public class TestHydroResponseUnit {
         }
         
         System.out.println("Reading all 10 files ...");
-        ArrayList<HydroResponseUnit> hrus = HydroResponseUnit.newFromSWATFiles(filenames);
+        List<HydroResponseUnit> hrus = HydroResponseUnit.newFromSWATFiles(filenames);
         
         System.out.println("Changing GWHT of the files ...");
         for (int idx = 0; idx<filenames.length; idx++) {

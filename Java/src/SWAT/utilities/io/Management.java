@@ -19,7 +19,8 @@ import java.util.List;
  *
  * @author mabouali
  */
-public final class Management {
+public final class Management
+        implements SWATFormatInput<Management,Management.fields> {
     public static enum fields {
             TITLE(String.class,""),
             NMGT(Integer.class,"NMGT:Management code"),
@@ -83,6 +84,7 @@ public final class Management {
         this.readSWATFileFormat(filename);
     }
     
+    @Override
     public final Management set(Management.fields fieldName, Object value)
             throws IllegalArgumentException {
         if (value.getClass().equals(fieldName.getFieldClassType())) {
@@ -96,14 +98,17 @@ public final class Management {
         }
         return this;
     }
+    @Override
     public final Management set(String fieldNameStr, Object value) {
         return set(Management.fields.valueOf(fieldNameStr), value);
     }
     
+    @Override
     public Object get(Management.fields fieldName)
             throws NullPointerException {
         return values.get(fieldName);
     }
+    @Override
     public Object get(String fieldNameStr) {
         return values.get(Management.fields.valueOf(fieldNameStr));
     }
@@ -304,6 +309,7 @@ public final class Management {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
     
+    @Override
     public Management readSWATFileFormat(String filename)
             throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -333,6 +339,7 @@ public final class Management {
         }
         return this;
     }
+    @Override
     public void writeSWATFileFormat(String filename)
             throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -344,7 +351,7 @@ public final class Management {
         Management mgt = new Management();
         return mgt.readSWATFileFormat(filename);
     }
-    public static ArrayList<Management> newFromSWATFiles(String[] filenames)
+    public static List<Management> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<Management> mgts = new ArrayList();
         for (String filename: filenames){

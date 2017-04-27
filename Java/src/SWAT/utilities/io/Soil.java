@@ -20,7 +20,8 @@ import java.util.List;
  *
  * @author mabouali
  */
-public final class Soil {
+public final class Soil
+        implements SWATFormatInput<Soil,Soil.fields> {
     public static enum fields {
         TITLE     (String.class,""),
         SNAM      (String.class," Soil Name: "),
@@ -84,6 +85,7 @@ public final class Soil {
         this.readSWATFileFormat(filename);
     }
     
+    @Override
     public Soil set(Soil.fields fieldName, Object value)
             throws IllegalArgumentException {
         if (value.getClass().equals(fieldName.getFieldClassType())) {
@@ -113,6 +115,7 @@ public final class Soil {
         }
         return this;
     }
+    @Override
     public Soil set(String fieldNameStr, Object value) {
         return this.set(fields.valueOf(fieldNameStr),value);
     }
@@ -152,10 +155,12 @@ public final class Soil {
         return this.set(fields.valueOf(fieldNameStr), value,idx);
     }
 
+    @Override
     public Object get(Soil.fields fieldName)
             throws NullPointerException {
         return values.get(fieldName);
     }
+    @Override
     public Object get(String fieldNameStr)
             throws NullPointerException {
         return values.get(Soil.fields.valueOf(fieldNameStr));
@@ -473,6 +478,7 @@ public final class Soil {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
     
+    @Override
     public Soil readSWATFileFormat(String filename)
             throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -524,6 +530,7 @@ public final class Soil {
         }
         return this;
     }
+    @Override
     public void writeSWATFileFormat(String filename)
             throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -535,7 +542,7 @@ public final class Soil {
         Soil sol = new Soil();
         return sol.readSWATFileFormat(filename);
     }
-    public static ArrayList<Soil> newFromSWATFiles(String[] filenames)
+    public static List<Soil> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<Soil> sols = new ArrayList();
         for (String filename: filenames){

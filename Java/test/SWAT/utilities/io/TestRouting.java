@@ -5,12 +5,8 @@
  */
 package SWAT.utilities.io;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -101,7 +97,7 @@ public class TestRouting {
         }
         
         System.out.println("Reading all 10 files ...");
-        ArrayList<Routing> rtes = Routing.newFromSWATFiles(filenames);
+        List<Routing> rtes = Routing.newFromSWATFiles(filenames);
         
         System.out.println("Changing GWHT of the files ...");
         for (int idx = 0; idx<filenames.length; idx++) {

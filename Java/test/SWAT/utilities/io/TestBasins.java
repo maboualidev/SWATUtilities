@@ -30,9 +30,15 @@ public class TestBasins {
         System.out.println("WWQFILE: " + bsn.get(Basins.fields.WWQFILE));
         
     }
+    public static void test1() throws IOException {
+        String filename = "..\\..\\SampleFiles\\BSN\\basins.bsn";
+        SWATFormatInput bsn = new Basins(filename);
+        System.out.println("Comment 1: " + bsn.get(Basins.fields.COMMENT1.toString()));
+    }
     public static void main(String[] args) throws IOException {
         System.out.println("Testing SWAT.utilities.io.Basins!");
         test0();
+        test1();
         
         
     }

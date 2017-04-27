@@ -19,7 +19,8 @@ import java.util.List;
  *
  * @author mabouali
  */
-public final class HydroResponseUnit {
+public final class HydroResponseUnit
+        implements SWATFormatInput<HydroResponseUnit,HydroResponseUnit.fields> {
     public static enum fields {
         TITLE(String.class,""),
         HRU_FR(Double.class,"HRU_FR : Fraction of subbasin area contained in HRU"),
@@ -92,6 +93,7 @@ public final class HydroResponseUnit {
         this.readSWATFileFormat(filename);
     }
     
+    @Override
     public final HydroResponseUnit set(fields fieldName, Object value)
             throws IllegalArgumentException {
         // Checking if the provided value has proper type and limits
@@ -106,14 +108,17 @@ public final class HydroResponseUnit {
         }
         return this;
     }
+    @Override
     public final HydroResponseUnit set(String fieldNameStr, Object value) {
         return set(HydroResponseUnit.fields.valueOf(fieldNameStr), value);
     }
     
+    @Override
     public Object get(HydroResponseUnit.fields fieldName)
             throws NullPointerException {
         return values.get(fieldName);
     }
+    @Override
     public Object get(String fieldNameStr) {
         return values.get(HydroResponseUnit.fields.valueOf(fieldNameStr));
     }
@@ -385,6 +390,7 @@ public final class HydroResponseUnit {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
 
+    @Override
     public HydroResponseUnit readSWATFileFormat(String filename)
             throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -418,6 +424,7 @@ public final class HydroResponseUnit {
         }
         return this;
     }
+    @Override
     public void writeSWATFileFormat(String filename)
             throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -429,7 +436,7 @@ public final class HydroResponseUnit {
         HydroResponseUnit hru = new HydroResponseUnit();
         return hru.readSWATFileFormat(filename);
     }
-    public static ArrayList<HydroResponseUnit> newFromSWATFiles(String[] filenames)
+    public static List<HydroResponseUnit> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<HydroResponseUnit> hrus = new ArrayList();
         for (String filename: filenames){

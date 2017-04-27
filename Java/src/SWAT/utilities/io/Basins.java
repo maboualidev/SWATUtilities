@@ -19,7 +19,8 @@ import java.util.List;
  *
  * @author mabouali
  */
-public final class Basins {
+public final class Basins
+        implements SWATFormatInput<Basins,Basins.fields> {
     public static enum fields {
         TITLE(String.class,""),
         COMMENT1(String.class,""),
@@ -178,6 +179,7 @@ public final class Basins {
         this.readSWATFileFormat(filename);
     }
     
+    @Override
     public final Basins set(Basins.fields fieldName, Object value)
             throws IllegalArgumentException {
         if (value.getClass().equals(fieldName.getFieldClassType())) {
@@ -191,14 +193,17 @@ public final class Basins {
         }
         return this;
     }
+    @Override
     public final Basins set(String fieldNameStr, Object value) {
         return set(Basins.fields.valueOf(fieldNameStr), value);
     }
 
+    @Override
     public Object get(Basins.fields fieldName)
             throws NullPointerException {
         return values.get(fieldName);
     }
+    @Override
     public Object get(String fieldNameStr) {
         return values.get(Basins.fields.valueOf(fieldNameStr));
     }
@@ -932,6 +937,7 @@ public final class Basins {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
     
+    @Override
     public Basins readSWATFileFormat(String filename)
             throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.ISO_8859_1)) {
@@ -962,6 +968,7 @@ public final class Basins {
         }
         return this;
     }
+    @Override
     public void writeSWATFileFormat(String filename)
             throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.UTF_8)) {
@@ -973,7 +980,7 @@ public final class Basins {
         Basins bsn = new Basins();
         return bsn.readSWATFileFormat(filename);
     }
-    public static ArrayList<Basins> newFromSWATFiles(String[] filenames)
+    public static List<Basins> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<Basins> bsns = new ArrayList();
         for (String filename: filenames){

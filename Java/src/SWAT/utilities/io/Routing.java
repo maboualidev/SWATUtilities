@@ -19,7 +19,8 @@ import java.util.List;
  *
  * @author mabouali
  */
-public final class Routing {
+public final class Routing
+        implements SWATFormatInput<Routing,Routing.fields> {
     public static enum fields {
         TITLE(String.class,""),
         CHW2(Double.class,"CHW2 : Main channel width [m]"),
@@ -77,6 +78,7 @@ public final class Routing {
         this.readSWATFileFormat(filename);
     }
     
+    @Override
     public final Routing set(Routing.fields fieldName, Object value)
             throws IllegalArgumentException {
         if (value.getClass().equals(fieldName.getFieldClassType())) {
@@ -116,6 +118,7 @@ public final class Routing {
             return this.set(fieldName,value);
         }
     }
+    @Override
     public final Routing set(String fieldNameStr, Object value) {
         return set(Routing.fields.valueOf(fieldNameStr), value);
     }
@@ -123,10 +126,12 @@ public final class Routing {
         return this.set(Routing.fields.valueOf(fieldNameStr), value,idx);
     }
     
+    @Override
     public Object get(Routing.fields fieldName)
             throws NullPointerException {
         return values.get(fieldName);
     }
+    @Override
     public Object get(String fieldNameStr) {
         return values.get(Routing.fields.valueOf(fieldNameStr));
     }
@@ -353,6 +358,7 @@ public final class Routing {
         return containsAllFieldsIgnoring(fieldNamesList);
     }
     
+    @Override
     public Routing readSWATFileFormat(String filename)
             throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename),StandardCharsets.ISO_8859_1)) {
@@ -379,6 +385,7 @@ public final class Routing {
         }
         return this;
     }
+    @Override
     public void writeSWATFileFormat(String filename)
             throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename),StandardCharsets.ISO_8859_1)) {
@@ -390,7 +397,7 @@ public final class Routing {
         Routing rte = new Routing();
         return rte.readSWATFileFormat(filename);
     }
-    public static ArrayList<Routing> newFromSWATFiles(String[] filenames)
+    public static List<Routing> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<Routing> rtes = new ArrayList();
         for (String filename: filenames){
