@@ -1,0 +1,47 @@
+{
+	Inputs: 
+		[	{
+				SWATInputType: "GroundWater", 
+				FileNameFormat: "%05d0001.gw", 
+				Parameters: 	[	{
+										Name: "GW_REVAP", 
+										Value: "0.2", 
+										assignmentType: "assign", 
+										applicableHRUs: [10]
+									},
+									{	
+										Name: "REVAPMN", 
+										Value: "1000", 
+										assignmentType: "assign", 
+										applicableHRUs: [10, 11]
+									}
+								]
+			}, 
+			{
+				SWATInputType: "Soil", 
+				FileNameFormat: "%05d0001.sol", 
+				Parameters: 	[	{
+										Name: "SOL_AWC", 
+										Value: "0.2", 
+										assignmentType: "changeRate", 
+										applicableHRUs: [10]
+									}
+								]
+			}
+		], 
+	Outputs: 
+		[	
+			{
+				OriginalName: "output.sub", 
+				newName: "output_1.sub", 
+				Location: "../Outputs"
+			}
+		], 
+	SWATExecution: 
+		{
+			WorkingDIrectory: "./tmpFolder", 
+			TemplateZip: "../SWATBase.zip", 
+			DeleteWorkingDirectory: true, 
+			RollBack: false
+		}
+}

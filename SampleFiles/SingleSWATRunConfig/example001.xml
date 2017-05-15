@@ -1,0 +1,51 @@
+<RunSingleSWATConfig>
+	<RunID> 1 </RunID>
+	<Inputs>
+		<GroundWater>
+			<FileNameFormat> %05d0001.gw </FileNameFormat>
+			<Parameters>
+				<Parameter>
+					<Name> GW_REVAP </Name>
+					<Value> 0.2 </Value>
+					<AssignmentType> assign </AssignmentType>
+					<ApplicableHRUs> 10 </ApplicableHRUs>
+				</Parameter>
+				<Parameter>
+					<Name> REVAPMN </Name>
+					<Value> 1000 </Value>
+					<AssignmentType> assign </AssignmentType>
+					<ApplicableHRUs> 10, 11 </ApplicableHRUs>
+				</Parameter>
+			</Parameters>
+		</GroundWater>
+		<Soil>
+			<FileNameFormat> %05d0001.sol </FileNameFormat>
+			<Parameters>
+				<Parameter>
+					<Name> SOL_AWC </Name>
+					<Value> 0.2 </Value>
+					<AssignmentType> changeRate </AssignmentType>
+					<ApplicableHRUs> 10, 13 </ApplicableHRUs>
+				</Parameter>
+			</Parameters>
+		</Soil>
+	</Inputs>
+	<SWATExecution>
+		<SWATBinName> SWAT_64rel.exe </SWATBinName>
+		<WorkingDirectory> D:\RunSingleSWATJavaTMP </WorkingDirectory>
+		<TemplateZIP> ..\..\SampleFiles\SampleBaseSWATModel\\SWATBaseModel.zip </TemplateZIP>
+		<DeleteWorkingDirectory> True </DeleteWorkingDirectory>
+		<RollBack> True </RollBack>
+	</SWATExecution>
+	<Outputs>
+		<File>
+			<OriginalName> output.sub </OriginalName>
+			<NewName> output_1.sub </NewName>
+			<Location> D:\Outputs </Location>
+		</File>
+	</Outputs>
+	<Display>
+		<Verbose> True </Verbose>
+		<VerboseLevel> 3 </VerboseLevel>
+	</Display>
+</RunSingleSWATConfig>

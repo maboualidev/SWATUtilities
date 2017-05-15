@@ -1,19 +1,19 @@
- .sub file Subbasin: 5268 7/21/2014 12:00:00 AM ArcSWAT 2012.10_0.14
-        0.118972    | SUB_KM : Subbasin area [km2]
+ .sub file Subbasin: 3 12/23/2015 12:00:00 AM ArcSWAT 2012.10_0.14
+        7.742744    | SUB_KM : Subbasin area [km2]
 
 Climate in subbasin
-       43.176428    | LATITUDE : Latitude of subbasin [degrees]
-          198.72    | ELEV : Elevation of subbasin [m]
-               4    | IRGAGE: precip gage data used in subbasin
-               3    | ITGAGE: temp gage data used in subbasin
+       43.533319    | LATITUDE : Latitude of subbasin [degrees]
+          201.42    | ELEV : Elevation of subbasin [m]
+               2    | IRGAGE: precip gage data used in subbasin
+               2    | ITGAGE: temp gage data used in subbasin
                0    | ISGAGE: solar radiation gage data used in subbasin
                0    | IHGAGE: relative humidity gage data used in subbasin
                0    | IWGAGE: wind speed gage data used in subbasin
-052680000.wgn       | WGNFILE: name of weather generator data file
+000030000.wgn       | WGNFILE: name of weather generator data file
                1    | FCST_REG: Region number used to assign forecast data to the subbasin
 Elevation Bands
 | ELEVB: Elevation at center of elevation bands [m]
-1000.0012000.0023000.0034000.0045000.0056000.0067000.0078000.0089000.0091000.010
+   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000
 | ELEVB_FR: Fraction of subbasin area within elevation band
    0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000
 | SNOEB: Initial snow water content in elevation band [mm]
@@ -22,15 +22,15 @@ Elevation Bands
            0.000    | TLAPS : Temperature lapse rate [°C/km]
            0.000    | SNO_SUB : Initial snow water content [mm]
 Tributary Channels
-           0.587    | CH_L1 : Longest tributary channel length [km]
-           0.004    | CH_S1 : Average slope of tributary channel [m/m]
-           0.360    | CH_W1 : Average width of tributary channel [m]
+           4.883    | CH_L1 : Longest tributary channel length [km]
+           0.000    | CH_S1 : Average slope of tributary channel [m/m]
+           4.405    | CH_W1 : Average width of tributary channel [m]
            0.000    | CH_K1 : Effective hydraulic conductivity in tributary channel [mm/hr]
            0.014    | CH_N1 : Manning's "n" value for the tributary channels
 Impoundments
-052680000.pnd       | PNDFILE: name of subbasin impoundment file
+000030000.pnd       | PNDFILE: name of subbasin impoundment file
 Consumptive Water Use
-052680000.wus       | WUSFILE: name of subbasin water use file
+000030000.wus       | WUSFILE: name of subbasin water use file
 Climate Change
          330.000    | CO2 : Carbon dioxide concentration [ppmv]
 | RFINC:  Climate change monthly rainfall adjustment (January - June)
@@ -59,4 +59,4 @@ Floodplain
 HRU: Riparian
 
 HRU: General
-052680001.hru052680001.mgt052680001.sol052680001.chm 052680001.gw             052680001.sep
+000030001.hru000030001.mgt000030001.sol000030001.chm 000030001.gw             000030001.sep
