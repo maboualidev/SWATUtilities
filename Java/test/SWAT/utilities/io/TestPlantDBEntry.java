@@ -31,5 +31,4 @@ public class TestPlantDBEntry {
         String A = " 53.123456  | something";
         System.out.println(Double.parseDouble(A.substring(0, 7)));
     }
-    
 }

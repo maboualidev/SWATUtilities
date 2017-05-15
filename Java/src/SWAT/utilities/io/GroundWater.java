@@ -5,6 +5,7 @@
  */
 package SWAT.utilities.io;
 
+import SWAT.utilities.common.Convertor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -58,17 +59,24 @@ public final class GroundWater
             return this.description;
         }
     }
+    @Override
+    public Class getFieldClassType(String fieldNameStr) {
+        return fields.valueOf(fieldNameStr).getFieldClassType();
+    }
     
     private final EnumMap<fields,Object> values;
     
+    @SuppressWarnings("unchecked")
     public GroundWater() {
         this.values = new EnumMap(fields.class);
     }
+    @SuppressWarnings("unchecked")
     public GroundWater(String filename)
             throws IOException {
         this.values = new EnumMap(fields.class);
         this.readSWATFileFormat(filename);
     }
+    @SuppressWarnings("unchecked")
     public GroundWater( String TITLE,
                         double SHALLST, double DEEPST, double GW_DELAY, double ALPHA_BF,
                         double GWQMN, double GW_REVAP, double REVAPMN, double RCHRG_DP,
@@ -112,6 +120,11 @@ public final class GroundWater
     @Override
     public final GroundWater set(String fieldNameStr, Object value) {
         return set(fields.valueOf(fieldNameStr), value);
+    }
+    @Override
+    public final GroundWater set(String fieldNameStr, String value) {
+        fields fieldName = fields.valueOf(fieldNameStr);
+        return set(fieldName,Convertor.convertStringValueTo(value, fieldName.getFieldClassName()));
     }
     
     @Override
@@ -252,6 +265,7 @@ public final class GroundWater
         }
         return true;
     }
+    @SuppressWarnings("unchecked")
     public boolean containsAllFieldsIgnoring(String[] fieldNamesStr) {
         ArrayList<fields> fieldNamesList = new ArrayList(fieldNamesStr.length);
         for (String fieldNameStr: fieldNamesStr)
@@ -289,6 +303,7 @@ public final class GroundWater
         GroundWater gw = new GroundWater();
         return gw.readSWATFileFormat(filename);
     }
+    @SuppressWarnings("unchecked")
     public static List<GroundWater> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<GroundWater> gws = new ArrayList();

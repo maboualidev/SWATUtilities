@@ -26,6 +26,10 @@ public class TestBasins {
         bsn.writeSWATFileFormat("D:\\test.bsn");
         //Basins bsn2 = Basins.newFromSWATFile("D:\\test.bsn");
         
+        bsn.set("TIMP", "5.4");
+        System.out.println("Writing the new file to D:\\test.bsn");
+        bsn.writeSWATFileFormat("D:\\test.bsn");
+        
         System.out.println("PETFILE: " + bsn.get(Basins.fields.PETFILE));
         System.out.println("WWQFILE: " + bsn.get(Basins.fields.WWQFILE));
         
@@ -39,8 +43,5 @@ public class TestBasins {
         System.out.println("Testing SWAT.utilities.io.Basins!");
         test0();
         test1();
-        
-        
     }
-    
 }

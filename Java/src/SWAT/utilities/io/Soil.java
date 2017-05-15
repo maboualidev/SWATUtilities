@@ -5,6 +5,7 @@
  */
 package SWAT.utilities.io;
 
+import SWAT.utilities.common.Convertor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -65,7 +66,12 @@ public final class Soil
             return this.description;
         }    
     }
+    @Override
+    public Class getFieldClassType(String fieldNameStr) {
+        return fields.valueOf(fieldNameStr).getFieldClassType();
+    }
     
+    @SuppressWarnings("unchecked")
     private static final ArrayList<String> SPKEYLIST = 
             new ArrayList(Arrays.asList("SOL_Z","SOL_BD","SOL_AWC",
                                         "SOL_K","SOL_CBN","COL_CLAY",
@@ -75,10 +81,12 @@ public final class Soil
     private int nLayers=-1;
     private final EnumMap<Soil.fields,Object> values;
     
+    @SuppressWarnings("unchecked")
     public Soil() {
         this.nLayers=-1;
         this.values = new EnumMap(fields.class);
     }
+    @SuppressWarnings("unchecked")
     public Soil(String filename)
             throws IOException {
         this.values = new EnumMap(fields.class);
@@ -154,7 +162,12 @@ public final class Soil
             throws IllegalArgumentException {
         return this.set(fields.valueOf(fieldNameStr), value,idx);
     }
-
+    @Override
+    public final Soil set(String fieldNameStr, String value) {
+        fields fieldName = fields.valueOf(fieldNameStr);
+        return set(fieldName,Convertor.convertStringValueTo(value, fieldName.getFieldClassName()));
+    }
+    
     @Override
     public Object get(Soil.fields fieldName)
             throws NullPointerException {
@@ -471,6 +484,7 @@ public final class Soil
         }
         return true;
     }
+    @SuppressWarnings("unchecked")
     public boolean containsAllFieldsIgnoring(String[] fieldNamesStr) {
         ArrayList<fields> fieldNamesList = new ArrayList(fieldNamesStr.length);
         for (String fieldNameStr: fieldNamesStr)
@@ -542,6 +556,7 @@ public final class Soil
         Soil sol = new Soil();
         return sol.readSWATFileFormat(filename);
     }
+    @SuppressWarnings("unchecked")
     public static List<Soil> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<Soil> sols = new ArrayList();

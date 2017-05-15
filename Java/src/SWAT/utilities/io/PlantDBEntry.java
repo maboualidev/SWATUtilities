@@ -109,9 +109,11 @@ public final class PlantDBEntry {
      */
     private final EnumMap<fields, Object> values;
 
+    @SuppressWarnings("unchecked")
     public PlantDBEntry(){
         this.values = new EnumMap(fields.class);
-    }    
+    }
+    @SuppressWarnings("unchecked")
     public PlantDBEntry(int ICNUM, String CPNM, int IDC,
             double BIO_E, double HVSTI, double BLAI, double FRGRW1, double LAIMX1, double FRGRW2, double LAIMX2, double DLAI, double CHTMX, double RDMX, 
             double T_OPT, double T_BASE, double CNYLD, double CPYLD, double PLTNFR1, double PLTNFR2, double PLTNFR3, double PLTPFR1, double PLTPFR2, double PLTPFR3,
@@ -516,6 +518,7 @@ public final class PlantDBEntry {
         }
         return true;
     }
+     @SuppressWarnings("unchecked")
     public boolean containsAllFieldsIgnoring(String[] fieldNamesStr) {
         ArrayList<PlantDBEntry.fields> fieldNamesList = new ArrayList(fieldNamesStr.length);
         for (String fieldNameStr: fieldNamesStr)

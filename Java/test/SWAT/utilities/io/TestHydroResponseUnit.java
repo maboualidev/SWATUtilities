@@ -57,7 +57,5 @@ public class TestHydroResponseUnit {
         System.out.println("Testing SWAT.utilities.io.HydroResponseUnit!");
         test1();
         test2();
-        
     }
-    
 }

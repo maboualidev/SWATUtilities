@@ -5,6 +5,7 @@
  */
 package SWAT.utilities.io;
 
+import SWAT.utilities.common.Convertor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -66,12 +67,18 @@ public final class Routing
             return this.description;
         }
     }
+    @Override
+    public Class getFieldClassType(String fieldNameStr) {
+        return fields.valueOf(fieldNameStr).getFieldClassType();
+    }
     
     private final EnumMap<Routing.fields,Object> values;
     
+    @SuppressWarnings("unchecked")
     public Routing() {
         this.values = new EnumMap(Routing.fields.class);
     }
+    @SuppressWarnings("unchecked")
     public Routing(String filename)
             throws IOException {
         this.values = new EnumMap(fields.class);
@@ -124,6 +131,11 @@ public final class Routing
     }
     public final Routing set(String fieldNameStr, Object value, int idx) {
         return this.set(Routing.fields.valueOf(fieldNameStr), value,idx);
+    }
+    @Override
+    public final Routing set(String fieldNameStr, String value) {
+        fields fieldName = fields.valueOf(fieldNameStr);
+        return set(fieldName,Convertor.convertStringValueTo(value, fieldName.getFieldClassName()));
     }
     
     @Override
@@ -351,6 +363,7 @@ public final class Routing
         }
         return true;
     }
+    @SuppressWarnings("unchecked")
     public boolean containsAllFieldsIgnoring(String[] fieldNamesStr) {
         ArrayList<Routing.fields> fieldNamesList = new ArrayList(fieldNamesStr.length);
         for (String fieldNameStr: fieldNamesStr)
@@ -397,6 +410,7 @@ public final class Routing
         Routing rte = new Routing();
         return rte.readSWATFileFormat(filename);
     }
+    @SuppressWarnings("unchecked")
     public static List<Routing> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<Routing> rtes = new ArrayList();
@@ -410,7 +424,8 @@ public final class Routing
     public String toString() {
         return this.toJSONString();
     }
-    public String toString(String stringOutputType) throws IllegalArgumentException{
+    public String toString(String stringOutputType)
+            throws IllegalArgumentException{
         switch (stringOutputType){
             case "JSON":
                 return this.toJSONString();

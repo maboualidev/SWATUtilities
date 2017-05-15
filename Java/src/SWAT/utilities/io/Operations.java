@@ -13,22 +13,23 @@ import java.util.Set;
  *
  * @author mabouali
  */
-public final class ManagementOperations {
-
+public final class Operations {
     private static enum standardKeys{
         MONTH  (Integer.class,"%2d",2,3),
         DAY    (Integer.class,"%2d",5,6),
-        HUSC   (Double.class,"%8.3f",8,15),
+        DUMMY1 (String.class,"",8,10),
+        IYEAR  (Integer.class,"%4d",12,15),
         MGT_OPT(Integer.class,"%2d",17,18),
-        MGT1I  (Integer.class,"%4d",20,23),
-        MGT2I  (Integer.class,"%3d",25,27),
-        MGT3I  (Integer.class,"%2d",29,30),
-        MGT4   (Double.class,"%12.5f",32,43),
-        MGT5   (Double.class,"%6.2f",45,50),
-        MGT6   (Double.class,"%11.5f",52,62),
-        MGT7   (Double.class,"%4.2f",64,67),
-        MGT8   (Double.class,"%6.2f",69,74),
-        MGT9   (Double.class,"%5.2f",76,80);
+        F1     (Integer.class,"%4d",20,23),
+        DUMMY2 (String.class,"",25,27),
+        F2     (Double.class,"%6.2f",29,34),
+        F3     (Double.class,"%12.5f",36,47),
+        F4     (Double.class,"%6.2f",49,54),
+        F5     (Double.class,"%11.5f",56,66),
+        F6     (Double.class,"%8.2f",68,75),
+        F7     (Double.class,"%6.2f",77,82),
+        F8     (Double.class,"%5.2f",83,87);
+
         
         private final Class classType;
         private final String strFMT;
@@ -58,28 +59,28 @@ public final class ManagementOperations {
             return this.endIDX;
         }
     }
-    private final EnumMap<ManagementOperations.standardKeys,Object> values;
+    private final EnumMap<standardKeys,Object> values;
     private final LinkedHashMap<String,standardKeys> availableKeys;
     
     @SuppressWarnings("unchecked")
-    public ManagementOperations() {
-        values = new EnumMap(standardKeys.class);
+    public Operations() {
+        values = new EnumMap(Operations.standardKeys.class);
         availableKeys = new LinkedHashMap();
     }
     @SuppressWarnings("unchecked")
-    public ManagementOperations(int MGT_OPT) {
+    public Operations(int MGT_OPT) {
         values = new EnumMap(standardKeys.class);
         availableKeys = new LinkedHashMap();
         setAvailableKeys(MGT_OPT);
     }
     @SuppressWarnings("unchecked")
-    public ManagementOperations(String str) {
+    public Operations(String str) {
         values = new EnumMap(standardKeys.class);
         availableKeys = new LinkedHashMap();
         this.parseSWATTXTFormat(str);
     }
     
-    public ManagementOperations setValue(String keyStr, Object value)
+    public Operations setValue(String keyStr, Object value)
             throws IllegalArgumentException {
         if (availableKeys.containsKey(keyStr)) {
             standardKeys key = availableKeys.get(keyStr);
@@ -97,7 +98,6 @@ public final class ManagementOperations {
         }
         return this;
     }
-    
     public Object getValue(String keyStr)
             throws NullPointerException {
         if (availableKeys.containsKey(keyStr)) {
@@ -118,105 +118,65 @@ public final class ManagementOperations {
         availableKeys.clear();
         availableKeys.put("MONTH", standardKeys.MONTH);
         availableKeys.put("DAY", standardKeys.DAY);
-        availableKeys.put("HUSC", standardKeys.HUSC);
+        availableKeys.put("HUSC", standardKeys.IYEAR);
         availableKeys.put("MGT_OPT", standardKeys.MGT_OPT);
         switch (MGT_OPT) {
             case 1:
-                availableKeys.put("PLANT_ID",standardKeys.MGT1I);
-                availableKeys.put("CURYR_MAT",standardKeys.MGT3I);
-                availableKeys.put("HEAT_UNITS",standardKeys.MGT4);
-                availableKeys.put("LAI_INIT",standardKeys.MGT5);
-                availableKeys.put("BIO_INIT",standardKeys.MGT6);
-                availableKeys.put("HI_TARG",standardKeys.MGT7);
-                availableKeys.put("BIO_TARG",standardKeys.MGT8);
-                availableKeys.put("CNOP",standardKeys.MGT9);
+                availableKeys.put("TERR_P",standardKeys.F3);
+                availableKeys.put("TERR_CN",standardKeys.F4);
+                availableKeys.put("TERR_SL",standardKeys.F5);
                 break;
             case 2:
-                availableKeys.put("IRR_SC",standardKeys.MGT2I);
-                availableKeys.put("IRR_NO",standardKeys.MGT3I);
-                availableKeys.put("IRR_AMT",standardKeys.MGT4);
-                availableKeys.put("IRR_SALT",standardKeys.MGT5);
-                availableKeys.put("IRR_EFM",standardKeys.MGT6);
-                availableKeys.put("IRR_SQ",standardKeys.MGT7);
+                availableKeys.put("DRAIN_D",standardKeys.F3);
+                availableKeys.put("DRAIN_T",standardKeys.F4);
+                availableKeys.put("DRAIN_G",standardKeys.F5);
+                availableKeys.put("DRAIN_IDEP",standardKeys.F6);
                 break;
             case 3:
-                availableKeys.put("FERT_ID", standardKeys.MGT1I);
-                availableKeys.put("FRT_KG", standardKeys.MGT4);
-                availableKeys.put("FRT_SURFACE", standardKeys.MGT5);
+                availableKeys.put("CONT_CM", standardKeys.F3);
+                availableKeys.put("CONT_P", standardKeys.F4);
                 break;
             case 4:
-                availableKeys.put("PEST_ID", standardKeys.MGT1I);
-                availableKeys.put("PST_KG", standardKeys.MGT4);
-                availableKeys.put("PST_DEP", standardKeys.MGT5);
+                availableKeys.put("FILTER_U", standardKeys.F1);
+                availableKeys.put("FILTER_RATIO", standardKeys.F2);
+                availableKeys.put("FILTER_CON", standardKeys.F3);
+                availableKeys.put("FILTER_CH", standardKeys.F4);
                 break;
             case 5:
-                availableKeys.put("CNOP",standardKeys.MGT4);
-                availableKeys.put("HI_OVR",standardKeys.MGT5);
-                availableKeys.put("FRAC_HARVK",standardKeys.MGT6);
+                availableKeys.put("STRIP_N",standardKeys.F3);
+                availableKeys.put("STRIP_CN",standardKeys.F4);
+                availableKeys.put("STRIP_C",standardKeys.F5);
+                availableKeys.put("STRIP_P",standardKeys.F6);
                 break;
             case 6:
-                availableKeys.put("TILL_ID", standardKeys.MGT1I);
-                availableKeys.put("CNOP", standardKeys.MGT4);
+                availableKeys.put("FIRE_CN", standardKeys.F3);
                 break;
             case 7:
-                availableKeys.put("IHV_GBM", standardKeys.MGT2I);
-                availableKeys.put("HARVEFF", standardKeys.MGT4);
-                availableKeys.put("HI_OVR", standardKeys.MGT5);
+                availableKeys.put("GWATI",standardKeys.F1);
+                availableKeys.put("GWATN",standardKeys.F2);
+                availableKeys.put("GWATSPCON",standardKeys.F3);
+                availableKeys.put("GWATD",standardKeys.F4);
+                availableKeys.put("GWATW",standardKeys.F5);
+                availableKeys.put("GWATL",standardKeys.F6);
+                availableKeys.put("GWATS",standardKeys.F7);
                 break;
             case 8:
-                //Nothing needs to be done here
+                availableKeys.put("CROPNO_UPD",standardKeys.F1);
+                availableKeys.put("HI_UPD",standardKeys.F3);
+                availableKeys.put("LAIMX_UPD",standardKeys.F4);
                 break;
             case 9:
-                availableKeys.put("GRZ_DAYS",standardKeys.MGT1I);
-                availableKeys.put("MANURE_ID",standardKeys.MGT2I);
-                availableKeys.put("BIO_EAT",standardKeys.MGT4);
-                availableKeys.put("BIO_TRMP",standardKeys.MGT5);
-                availableKeys.put("MANURE_KG",standardKeys.MGT6);
+                availableKeys.put("SO_RES_FLAG",standardKeys.F1);
+                availableKeys.put("SO_RES",standardKeys.F3);
                 break;
             case 10:
-                availableKeys.put("WSTR_ID",standardKeys.MGT1I);
-                availableKeys.put("IRR_SCA",standardKeys.MGT2I);
-                availableKeys.put("IRR_NOA",standardKeys.MGT3I);
-                availableKeys.put("AUTO_WSTRS",standardKeys.MGT4);
-                availableKeys.put("IRR_EFF",standardKeys.MGT5);
-                availableKeys.put("IRR_MX",standardKeys.MGT6);
-                availableKeys.put("IRR_ASQ",standardKeys.MGT7);
-                break;
-            case 11:
-                availableKeys.put("AFERT_ID",standardKeys.MGT1I);
-                availableKeys.put("AUTO_NSTRS",standardKeys.MGT4);
-                availableKeys.put("AUTO_NAPP",standardKeys.MGT5);
-                availableKeys.put("AUTO_NYR",standardKeys.MGT6);
-                availableKeys.put("AUTO_EFF",standardKeys.MGT7);
-                availableKeys.put("AFRT_SURFACE",standardKeys.MGT8);
-                break;
-            case 12:
-                availableKeys.put("SWEEPEFF", standardKeys.MGT4);
-                availableKeys.put("FR_CURB", standardKeys.MGT5);
-                break;
-            case 13:
-                availableKeys.put("IMP_TRIG", standardKeys.MGT1I);
-                break;
-            case 14:
-                availableKeys.put("FERT_DAYS", standardKeys.MGT1I);
-                availableKeys.put("CFRT_ID", standardKeys.MGT2I);
-                availableKeys.put("IFRT_FREQ", standardKeys.MGT3I);
-                availableKeys.put("CFRT_KG", standardKeys.MGT4);
-                break;
-            case 15:
-                availableKeys.put("CPST_ID", standardKeys.MGT1I);
-                availableKeys.put("PEST_DAYS", standardKeys.MGT2I);
-                availableKeys.put("IPEST_FREQ", standardKeys.MGT3I);
-                availableKeys.put("CPST_KG", standardKeys.MGT4);
-                break;
-            case 16:
-                availableKeys.put("BURN_FRLB", standardKeys.MGT4);
-                break;
-            case 17:
-            case 0:
-                availableKeys.remove("MONTH");
-                availableKeys.remove("DAY");
-                availableKeys.remove("HUSC");
+                availableKeys.put("RO_BMP_FLAG",standardKeys.F1);
+                availableKeys.put("RO_BMP_SED",standardKeys.F2);
+                availableKeys.put("RO_BMP_PP",standardKeys.F3);
+                availableKeys.put("RO_BMP_SP",standardKeys.F4);
+                availableKeys.put("RO_BMP_PN",standardKeys.F6);
+                availableKeys.put("RO_BMP_SN",standardKeys.F7);
+                availableKeys.put("RO_BMP_BAC",standardKeys.F8);
                 break;
             default:
                 availableKeys.clear();
@@ -224,11 +184,15 @@ public final class ManagementOperations {
                     "MGT_OPT=%d is not recognized.",MGT_OPT));
         }
     }
+    
     public Set<String> getAvailableKeys() {
         return availableKeys.keySet();
     }
+//    public String[] getAvailableKeys() {
+//        return availableKeys.keySet().stream().toArray(String[]::new);
+//    }
     
-    public ManagementOperations parseSWATTXTFormat(String str) {
+    public Operations parseSWATTXTFormat(String str) {
         values.clear();
         availableKeys.clear();
         setAvailableKeys(Integer.parseInt(str.substring(16, 18).trim()));
@@ -255,7 +219,8 @@ public final class ManagementOperations {
     public String toString() {
         return this.toJSONString();
     }
-    public String toString(String stringOutputType) throws IllegalArgumentException{
+    public String toString(String stringOutputType)
+            throws IllegalArgumentException{
         switch (stringOutputType){
             case "JSON":
                 return this.toJSONString();
@@ -282,15 +247,24 @@ public final class ManagementOperations {
         standardKeys[] keys = standardKeys.values();
         for(int idx=(keys.length-1); idx>=0; idx--) {
             standardKeys key = keys[idx];
-            if (values.containsKey(key)) {
-                if (strBldr.length()!=0)
-                    strBldr.insert(0," ");
-                strBldr.insert(0, String.format(key.getStrFMT(),this.values.get(key)) );
-            } else {
+            if (key.equals(standardKeys.DUMMY1) ||
+                key.equals(standardKeys.DUMMY2)) {
                 if (strBldr.length()!=0) {
                     strBldr.insert(0, " ");
                     for (int idx2=key.getStartIDX(); idx2<=key.getEndIDX();idx2++)
                         strBldr.insert(0, " ");
+                }
+            } else {
+                if (values.containsKey(key)) {
+                    if (strBldr.length()!=0)
+                        strBldr.insert(0," ");
+                    strBldr.insert(0, String.format(key.getStrFMT(),this.values.get(key)) );
+                } else {
+                    if (strBldr.length()!=0) {
+                        strBldr.insert(0, " ");
+                        for (int idx2=key.getStartIDX(); idx2<=key.getEndIDX();idx2++)
+                            strBldr.insert(0, " ");
+                    }
                 }
             }
         }

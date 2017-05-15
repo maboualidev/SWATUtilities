@@ -5,6 +5,7 @@
  */
 package SWAT.utilities.io;
 
+import SWAT.utilities.common.Convertor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -168,13 +169,20 @@ public final class Basins
             return this.description;
         }
     }
+    @Override
+    public Class getFieldClassType(String fieldNameStr) {
+        return fields.valueOf(fieldNameStr).getFieldClassType();
+    }
     
     private final EnumMap<Basins.fields,Object> values;
     
+    @SuppressWarnings("unchecked")
     public Basins() {
         this.values = new EnumMap(fields.class);
     }
-    public Basins(String filename) throws IOException {
+    @SuppressWarnings("unchecked")
+    public Basins(String filename)
+            throws IOException {
         this.values = new EnumMap(fields.class);
         this.readSWATFileFormat(filename);
     }
@@ -196,6 +204,11 @@ public final class Basins
     @Override
     public final Basins set(String fieldNameStr, Object value) {
         return set(Basins.fields.valueOf(fieldNameStr), value);
+    }
+    @Override
+    public final Basins set(String fieldNameStr, String value) {
+        fields fieldName = fields.valueOf(fieldNameStr);
+        return set(fieldName,Convertor.convertStringValueTo(value, fieldName.getFieldClassName()));
     }
 
     @Override
@@ -930,6 +943,7 @@ public final class Basins
         }
         return true;
     }
+    @SuppressWarnings("unchecked")
     public boolean containsAllFieldsIgnoring(String[] fieldNamesStr) {
         List<Basins.fields> fieldNamesList = new ArrayList(fieldNamesStr.length);
         for (String fieldNameStr: fieldNamesStr)
@@ -980,6 +994,7 @@ public final class Basins
         Basins bsn = new Basins();
         return bsn.readSWATFileFormat(filename);
     }
+    @SuppressWarnings("unchecked")
     public static List<Basins> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<Basins> bsns = new ArrayList();
@@ -1005,7 +1020,7 @@ public final class Basins
         }
             
     }
-    public String toJSONString(){
+    public String toJSONString() {
         if (this.containsAllFields()) {
             StringBuilder strBldr = new StringBuilder("{");
             for (Basins.fields key: Basins.fields.values()) {

@@ -5,6 +5,7 @@
  */
 package SWAT.utilities.io;
 
+import SWAT.utilities.common.Convertor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -70,14 +71,20 @@ public final class Management
             return this.description;
         }
     }
+    @Override
+    public Class getFieldClassType(String fieldNameStr) {
+        return fields.valueOf(fieldNameStr).getFieldClassType();
+    }
     
     private final EnumMap<Management.fields,Object> values;
     private final List<ManagementOperations> operationsSchedules;
     
+    @SuppressWarnings("unchecked")
     public Management() {
         this.values = new EnumMap(Management.fields.class);
         this.operationsSchedules = new ArrayList();
     }
+    @SuppressWarnings("unchecked")
     public Management(String filename) throws IOException {
         this.values = new EnumMap(Management.fields.class);
         this.operationsSchedules = new ArrayList();
@@ -101,6 +108,11 @@ public final class Management
     @Override
     public final Management set(String fieldNameStr, Object value) {
         return set(Management.fields.valueOf(fieldNameStr), value);
+    }
+    @Override
+    public final Management set(String fieldNameStr, String value) {
+        fields fieldName = fields.valueOf(fieldNameStr);
+        return set(fieldName,Convertor.convertStringValueTo(value, fieldName.getFieldClassName()));
     }
     
     @Override
@@ -302,6 +314,7 @@ public final class Management
         }
         return true;
     }
+    @SuppressWarnings("unchecked")
     public boolean containsAllFieldsIgnoring(String[] fieldNamesStr) {
         List<Management.fields> fieldNamesList = new ArrayList(fieldNamesStr.length);
         for (String fieldNameStr: fieldNamesStr)
@@ -351,6 +364,7 @@ public final class Management
         Management mgt = new Management();
         return mgt.readSWATFileFormat(filename);
     }
+    @SuppressWarnings("unchecked")
     public static List<Management> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<Management> mgts = new ArrayList();
@@ -364,7 +378,8 @@ public final class Management
     public String toString() {
         return this.toJSONString();
     }
-    public String toString(String stringOutputType) throws IllegalArgumentException{
+    public String toString(String stringOutputType)
+            throws IllegalArgumentException{
         switch (stringOutputType){
             case "JSON":
                 return this.toJSONString();

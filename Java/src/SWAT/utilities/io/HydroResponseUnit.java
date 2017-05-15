@@ -5,6 +5,7 @@
  */
 package SWAT.utilities.io;
 
+import SWAT.utilities.common.Convertor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -82,11 +83,18 @@ public final class HydroResponseUnit
             return this.description;
         }
     }
+    @Override
+    public Class getFieldClassType(String fieldNameStr) {
+        return fields.valueOf(fieldNameStr).getFieldClassType();
+    }
+    
     private final EnumMap<HydroResponseUnit.fields,Object> values;
     
+    @SuppressWarnings("unchecked")
     public HydroResponseUnit() {
         this.values = new EnumMap(HydroResponseUnit.fields.class);
     }
+    @SuppressWarnings("unchecked")
     public HydroResponseUnit(String filename)
             throws IOException {
         this.values = new EnumMap(fields.class);
@@ -111,6 +119,11 @@ public final class HydroResponseUnit
     @Override
     public final HydroResponseUnit set(String fieldNameStr, Object value) {
         return set(HydroResponseUnit.fields.valueOf(fieldNameStr), value);
+    }
+    @Override
+    public final HydroResponseUnit set(String fieldNameStr, String value) {
+        fields fieldName = fields.valueOf(fieldNameStr);
+        return set(fieldName,Convertor.convertStringValueTo(value, fieldName.getFieldClassName()));
     }
     
     @Override
@@ -383,6 +396,7 @@ public final class HydroResponseUnit
         }
         return true;
     }
+    @SuppressWarnings("unchecked")
     public boolean containsAllFieldsIgnoring(String[] fieldNamesStr) {
         ArrayList<fields> fieldNamesList = new ArrayList(fieldNamesStr.length);
         for (String fieldNameStr: fieldNamesStr)
@@ -436,6 +450,7 @@ public final class HydroResponseUnit
         HydroResponseUnit hru = new HydroResponseUnit();
         return hru.readSWATFileFormat(filename);
     }
+    @SuppressWarnings("unchecked")
     public static List<HydroResponseUnit> newFromSWATFiles(String[] filenames)
             throws IOException {
         ArrayList<HydroResponseUnit> hrus = new ArrayList();
