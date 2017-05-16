@@ -146,7 +146,10 @@ public class RollBackManger {
     @Override
     protected void finalize()
             throws Throwable{
+        super.finalize();
+//        System.out.println("Finalizing rbm: " + fileList.size());
         for (File f: this.fileList) {
+//            System.out.println("Removing" + f);
             Files.delete(f.toPath());
             fileList.remove(f);
         }
@@ -154,10 +157,10 @@ public class RollBackManger {
         this.isBackupFolderAvailable = false;
     }
 
-    private static String turn2AbsolutePath (String path) {
+    public static String turn2AbsolutePath (String path) {
         return (new File(path)).getAbsolutePath();
     }
-    private static String getChildAbsolutePath (String parentPath, String childName) {
+    public static String getChildAbsolutePath (String parentPath, String childName) {
         return (turn2AbsolutePath(parentPath) + File.separator + childName);
     }
 

@@ -5,9 +5,10 @@
  */
 package SWAT.utilities.runtime;
 
-import SWAT.utilities.common.UnzipUtility;
+import SWAT.utilities.common.*;
 import SWAT.utilities.io.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -15,10 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,17 +29,15 @@ import org.xml.sax.SAXException;
  */
 public class RunSingleSWAT {
     public RunSingleSWATConfig config;
-    public Set<String> modifiedFiles;
+    private RollBackManger rbm;
     
-    @SuppressWarnings("unchecked")
     public RunSingleSWAT() {
-        this.modifiedFiles = new HashSet();
     }
+    
     @SuppressWarnings("unchecked")
     public RunSingleSWAT(String XMLFilename)
             throws ParserConfigurationException, IOException, SAXException {
         this.config = new RunSingleSWATConfig(XMLFilename);
-        this.modifiedFiles = new HashSet();
     }
     
     public RunSingleSWAT readFromXMLFile(String XMLFilename)
@@ -82,31 +79,7 @@ public class RunSingleSWAT {
                            (config.verbose && config.getVerboseLevel()>2));
         
     }
-    
-    public void backupSWATInputFile(String filename)
-            throws IOException {
-        // Creating backup folders if one doesn't exist
-        Path BKPFolderPath = Paths.get(config.getSWATExecution().getWorkingDirectory(),"SWATInputFileBackups");
-        if (!Files.exists(BKPFolderPath)) {
-            if (config.verbose && config.getVerboseLevel()>1)
-                System.out.println("**Creating the backup folder for SWAT input files at " + BKPFolderPath + "**");
-            Files.createDirectory(BKPFolderPath);
-        }
-        
-        Path srcFile = Paths.get(config.getSWATExecution().getWorkingDirectory(),filename);
-        Path dstFile = Paths.get(BKPFolderPath.toString(),filename);
-        if (!modifiedFiles.contains(filename) &&
-            !Files.exists(dstFile)){
-            modifiedFiles.add(filename);
-            if (config.verbose) {
-                if (config.getVerboseLevel()==2)
-                    System.out.println("- Backing up: " + filename);
-                if (config.getVerboseLevel()>2)
-                    System.out.printf("Backing up %s to %s.\n", srcFile,dstFile);
-            }
-            Files.copy(srcFile, dstFile);
-        }
-    }
+
     public static SWATFormatInput loadInput(SWATInput.SWATInputTypes inputType, String filename)
             throws IOException {
         SWATFormatInput input;
@@ -149,34 +122,50 @@ public class RunSingleSWAT {
         if (config.verbose)
             System.out.println("Modifying SWAT Input files: ...");
         
-        // In order to reduce disk I/O all files are first modified in memory
-        // then they are written to disk. It is possible that the config file has
-        // different section that affects the same file.
-        Map<String,SWATFormatInput> inputs = new HashMap();
+        rbm = new RollBackManger(config.getSWATExecution().getWorkingDirectory());
+        // It is possible that the config file has different section that 
+        // affects the same file. In order to reduce disk I/O all files are 
+        // first modified in memory then they are written to disk.
+        // Map Input takes care of this.
+        Map<File,SWATFormatInput> inputs = new HashMap();
         for (SWATInput inputConfig: config.getInputs()) {
             SWATInput.SWATInputTypes inputType = inputConfig.getSWATInputType();
             if (config.verbose)
                 System.out.println("- Input type: " + inputConfig.getSWATInputType());
-            // Backing up the file if needed
             String fileFMT = inputConfig.getFileNameFormat();
+            
             for (SWATInputParameter paramConfig: inputConfig.getParameters()) {
                 String paramName = paramConfig.getName();
                 String paramValue = paramConfig.getValue();
                 SWATInputParameter.AssignmentType assignmentType = paramConfig.getAssignmentType();
                 if (config.verbose && config.getVerboseLevel()>1)
                     System.out.println("- - Parameter Name: " + paramName);
-                for (Integer HRUID: paramConfig.getApplicableHRUs()) {
-                    if (config.verbose && config.getVerboseLevel()>1)
-                        System.out.println("- - - HRU ID: " + HRUID);
-                    String baseFilename = String.format(fileFMT,(int) HRUID);
-                    String filename = Paths.get(config.getSWATExecution().getWorkingDirectory(),
-                                                baseFilename).toString();
-                    if (config.getSWATExecution().rollBack()) {
-                        backupSWATInputFile(baseFilename);
+                
+                // getting the FileList that needs to be modified
+                File[] fileList;
+                List<Integer> HRUIDs = paramConfig.getApplicableHRUs();
+                if (HRUIDs.contains(-1)) {
+                    // All HRUs
+                    fileList = (new File(config.getSWATExecution().getWorkingDirectory()))
+                            .listFiles( (d,name) -> name.matches(fileFMT.replaceAll("%.*?d", ".*?")));
+                } else {
+                    // Only specific HRUs
+                    fileList = new File[HRUIDs.size()];
+                    for (int idx=0; idx<HRUIDs.size();idx++) {
+                        String baseFilename = String.format(fileFMT, (int) HRUIDs.get(idx));
+                        fileList[idx] = new File(RollBackManger.getChildAbsolutePath(config.getSWATExecution().getWorkingDirectory(), baseFilename));
                     }
-                    if (!inputs.containsKey(filename))
-                        inputs.put(filename, loadInput(inputType, filename));
-                    SWATFormatInput input = inputs.get(filename);
+                }
+                    
+                for (File file: fileList) {
+                    if (config.verbose && config.getVerboseLevel()>1)
+                        System.out.println("- - - File: " + file);
+                    if (config.getSWATExecution().rollBack()) {
+                        rbm.backup(file.getName());
+                    }
+                    if (!inputs.containsKey(file))
+                        inputs.put(file, loadInput(inputType, file.toString()));
+                    SWATFormatInput input = inputs.get(file);
                     switch (assignmentType) {
                         case assign:
                             input.set(paramName, paramValue);
@@ -209,8 +198,8 @@ public class RunSingleSWAT {
         } // END OF Looping over inputs
         
         // updating the inputfiles
-        for (String key: inputs.keySet()) 
-            inputs.get(key).writeSWATFileFormat(key);
+        for (File file: inputs.keySet()) 
+            inputs.get(file).writeSWATFileFormat(file.toString());
     }
     
     
@@ -262,19 +251,8 @@ public class RunSingleSWAT {
     
     public void rollBackSWATInputFiles()
             throws IOException {
-        
         if (config.getSWATExecution().rollBack()) {
-            if (config.verbose)
-                System.out.println("Rolling back SWAT model to its original state ...");
-            Path BKPFolderPath = Paths.get(config.getSWATExecution().getWorkingDirectory(),"SWATInputFileBackups");
-            for (String filename: this.modifiedFiles) {
-                if (config.verbose && config.getVerboseLevel()>1)
-                    System.out.println("- restoring " + filename);
-                Path srcFile = Paths.get(BKPFolderPath.toString(),filename);
-                Path dstFile = Paths.get(config.getSWATExecution().getWorkingDirectory(),filename);
-                Files.move(srcFile,dstFile,StandardCopyOption.REPLACE_EXISTING);
-            }
-            Files.delete(BKPFolderPath);
+            rbm.rollBackAll(true);
         }    
     }
     public void backUpOutputFiles()
