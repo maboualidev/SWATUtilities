@@ -1,3 +1,5 @@
 AuxFolder/
-Java/SWATJavaUtilities/
+Java/SWATJavaUtilities/build/
+Java/SWATJavaUtilities/nbproject/
+Java/SWATJavaUtilities/test/
 
