@@ -252,6 +252,8 @@ public class RunSingleSWAT {
     public void rollBackSWATInputFiles()
             throws IOException {
         if (config.getSWATExecution().rollBack()) {
+            if (config.verbose)
+                System.out.println("Rolling back SWAT Inputs to their original states ...");
             rbm.rollBackAll(true);
         }    
     }
