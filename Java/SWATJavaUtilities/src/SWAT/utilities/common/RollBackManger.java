@@ -17,9 +17,6 @@ import java.util.Set;
 
 
 /**
- * 
- * @author Mohammad Abouali
- * 
  * RollBackManager is a utility that allows the user to backup some files and 
  * restore the original file later. SWAT model, for example, could potentially
  * contain hundreds of files. For example in one of the project I was involved,
@@ -27,6 +24,8 @@ import java.util.Set;
  * allows you to change the SWAT files during your run; however, keep a copy of
  * the original files. Later, you could give a call to this utility and restore 
  * the files to their original state prior to the changes.
+ * 
+ * @author Mohammad Abouali
  */
 public class RollBackManger {
     /**
