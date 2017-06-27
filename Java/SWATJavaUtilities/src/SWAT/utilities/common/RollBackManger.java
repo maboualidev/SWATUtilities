@@ -8,165 +8,369 @@ package SWAT.utilities.common;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+
 /**
- *
- * @author mabouali
+ * 
+ * @author Mohammad Abouali
+ * 
+ * RollBackManager is a utility that allows the user to backup some files and 
+ * restore the original file later. SWAT model, for example, could potentially
+ * contain hundreds of files. For example in one of the project I was involved,
+ * the SWAT model contained more than 190K files. This utility, i.e. RollBackManager
+ * allows you to change the SWAT files during your run; however, keep a copy of
+ * the original files. Later, you could give a call to this utility and restore 
+ * the files to their original state prior to the changes.
  */
 public class RollBackManger {
-    private File defaultSourceDIR;
-    private File backupFolder;
+    /**
+     * It stores the default source folder. The default value is the current 
+     * folder.
+     */
+    private String defaultSourceFolder;
+    
+    /**
+     * It stores the location of the backup folder. The default value is the a 
+     * folder called "BackupFolder" within the sourceFolder.
+     */
+    private String backupFolder;
+    
+    /**
+     * Tracks whether the backup folder is already created. It can not be changed
+     * once some files are backed up.
+     */
     private boolean isBackupFolderAvailable;
-    private final Set<File> fileList;
+    
+    /**
+     * A map from original file path to its backup. The key is the absolute 
+     * path to the original location of the file and the value is the absolute 
+     * path to the where it was backed up.
+     */
+    private Map<String,String> fileList;
 
+    /**
+     * default constructor, setting the source folder to the current path and 
+     * the back folder to backupFolder within the current path.
+     */
     @SuppressWarnings("unchecked")
     public RollBackManger() {
-        this.defaultSourceDIR = new File(turn2AbsolutePath(""));
-        this.backupFolder = new File(getChildAbsolutePath(defaultSourceDIR.getPath(), "backupFolder"));
-        this.fileList = new HashSet();
+        this.defaultSourceFolder = turn2AbsolutePath("");
+        this.backupFolder = getChildAbsolutePath(this.defaultSourceFolder, "backupFolder");
+        this.fileList = new HashMap();
         this.isBackupFolderAvailable = false;
     }
+    /**
+     * Sets the default source folder to the provided one and the backup folder 
+     * is set to backupFolder within the default source folder.
+     * @param defaultSrcFolder 
+     */
     @SuppressWarnings("unchecked")
     public RollBackManger(String defaultSrcFolder) {
-        this.defaultSourceDIR = new File(turn2AbsolutePath(defaultSrcFolder));
-        this.backupFolder = new File(getChildAbsolutePath(defaultSrcFolder, "backupFolder"));
-        this.fileList = new HashSet();
+        this.defaultSourceFolder = turn2AbsolutePath(defaultSrcFolder);
+        this.backupFolder = getChildAbsolutePath(defaultSrcFolder, "backupFolder");
+        this.fileList = new HashMap();
         this.isBackupFolderAvailable = false;
     }
+    /**
+     * Sets both the default source folder and backup folder to those provided 
+     * by the user.
+     * @param defaultSrcFolder
+     * @param backupFolder 
+     */
     @SuppressWarnings("unchecked")
     public RollBackManger(String defaultSrcFolder, String backupFolder) {
-        this.defaultSourceDIR = new File(turn2AbsolutePath(defaultSrcFolder));
-        this.backupFolder = new File(turn2AbsolutePath(backupFolder));
-        this.fileList = new HashSet();
+        this.defaultSourceFolder = turn2AbsolutePath(defaultSrcFolder);
+        this.backupFolder = turn2AbsolutePath(backupFolder);
+        this.fileList = new HashMap();
         this.isBackupFolderAvailable = false;
     }
 
-    public RollBackManger setDefaultSourceDIR(File defaultSourceDIR) {
-        this.defaultSourceDIR = defaultSourceDIR;
+    /**
+     * changes/sets the default source folder.
+     * @param defaultSourceDIR
+     * @return 
+     */
+    public RollBackManger setDefaultSourceDIR(String defaultSourceDIR) {
+        this.defaultSourceFolder = turn2AbsolutePath(defaultSourceDIR);
         return this;
     }
-    public RollBackManger setBackupFolder(File backupFolder) {
-        if (fileList.isEmpty()) {
-            this.backupFolder = backupFolder;
-        } else {
+    /**
+     * Changes/sets the backup folder. It only works if there is no file 
+     * already backed up, i.e. the file list is empty. If the fileList is not
+     * empty any attempt to change the backup folder will results in throwing an
+     * error.
+     * @param backupFolder
+     * @return 
+     * @throws Error
+     */
+    public RollBackManger setBackupFolder(String backupFolder) {
+        if (!fileList.isEmpty()) {
             throw new Error("Cannot change backup folder location once there are some files backed up already.");
         }
+        this.backupFolder = turn2AbsolutePath(backupFolder);
         return this;
     }
-
-    public File getDefaultSourceDIR() {
-        return defaultSourceDIR;
+    
+    /**
+     * returns the absolute path to the default source Folder
+     * @return 
+     */
+    public String getDefaultSourceFolder() {
+        return defaultSourceFolder;
     }
-    public File getBackupFolder() {
+    /**
+     * returns the absolute path to the current backup folder.
+     * @return 
+     */
+    public String getBackupFolder() {
         return backupFolder;
     }
 
+    /**
+     * It would return the size of the file list, i.e. how many files are already
+     * backed up.
+     * @return size of the file list
+     */
+    public int size() {
+        return this.fileList.size();
+    }
+    
+    /**
+     * It returns a Set containing a list of the absolute path to all the
+     * original files that are currently backed up.
+     * @return 
+     */
+    public Set<String> originalFileList() {
+        return fileList.keySet();
+    }
+    
+    /**
+     * It returns a Collection containing the absolute path to all the backed up
+     * files
+     * @return 
+     */
+    public Collection<String> bkpFileList() {
+        return fileList.values();
+    }
+    
+    /**
+     * Checks whether a file is already backed up or not.
+     * @param parentFolder
+     * @param filename
+     * @return 
+     */
+    public boolean isBackedUp(String parentFolder, String filename) {
+        String originalFileStr = getChildAbsolutePath(parentFolder, filename);
+        return fileList.containsKey(originalFileStr);
+    }
+    /**
+     * The same as calling isBackedUp(defaultSrcFolder,filename);
+     * @param filename
+     * @return 
+     */
+    public boolean isBackedUp(String filename) {
+        return isBackedUp(this.defaultSourceFolder, filename);
+    }
+    
+    /**
+     * Checks whether the back folder exists or not. If not, it creates one.
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger prepareBackupFolder()
             throws IOException {
-        if (!backupFolder.exists()) {
-            Files.createDirectories(backupFolder.toPath());
+        File backupFolderFile = new File(backupFolder);
+        if (!backupFolderFile.exists()) {
+            Files.createDirectories(backupFolderFile.toPath());
         }
         this.isBackupFolderAvailable = true;
         return this;
     }
+    
+    /**
+     * It will back up the file that is within the parent folder.
+     * @param parentFolder
+     * @param filename
+     * @param forceBackup if it is set to true, the file is backed up even if it 
+     *                    was already backed up. If it is set to false, and the
+     *                    file is already backed up it won't be copied again to 
+     *                    the backup folder but an error message is printed; 
+     *                    however, no exception is thrown.
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger backup(String parentFolder, String filename, boolean forceBackup)
             throws IOException {
         if (!isBackupFolderAvailable)
             prepareBackupFolder();
         
-        File srcFile = new File(getChildAbsolutePath(parentFolder, filename));
-        File dstFile = new File(getChildAbsolutePath(this.backupFolder.toString(), filename));
+        String originalFileStr = getChildAbsolutePath(parentFolder, filename);
+        String bkpFileStr = getChildAbsolutePath(this.backupFolder, filename);
+
         if (forceBackup) {
-            fileList.add(srcFile);
-            Files.copy(srcFile.toPath(), dstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy( (new File(originalFileStr)).toPath(), 
+                        (new File(bkpFileStr)).toPath(), 
+                        StandardCopyOption.REPLACE_EXISTING);
+            fileList.put(originalFileStr, bkpFileStr);
         } else {
-            if (!fileList.contains(srcFile)) {
-                fileList.add(srcFile);
-                Files.copy(srcFile.toPath(), dstFile.toPath());
+            if (fileList.containsKey(originalFileStr)) {
+                System.err.printf("%s already exists.", originalFileStr);
+            } else {
+                Files.copy((new File(originalFileStr)).toPath(), 
+                           (new File(bkpFileStr)).toPath());
+                fileList.put(originalFileStr, bkpFileStr);
             }
         }
         return this;
     }
+    /**
+     * The same as calling backup(parentFolder,filename,false);
+     * @param parentFolder
+     * @param filename
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger backup(String parentFolder, String filename)
             throws IOException {
         return backup(parentFolder, filename, false);
     }
+    /**
+     * The same as calling backup(defaultSrcFolder,filename,forceBackup);
+     * @param filename
+     * @param forceBackup
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger backup(String filename, boolean forceBackup)
             throws IOException {
-        return backup(this.defaultSourceDIR.toString(),filename,forceBackup);
+        return backup(this.defaultSourceFolder,filename,forceBackup);
     }
+    /**
+     * The same as calling backup(defaultSrcFolder,filename,false);
+     * @param filename
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger backup(String filename)
             throws IOException {
-        return backup(this.defaultSourceDIR.toString(),filename,false);
+        return backup(this.defaultSourceFolder,filename,false);
     }
 
+    /**
+     * If the file is backed up it is restored. Otherwise, it does nothing.
+     * @param parentFolder original parent folder name for the file to be restored
+     * @param filename the filename
+     * @param deleteBackup If set to true the backup of the file will be deleted
+     *                     and removed from the list.
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger rollBack(String parentFolder, String filename, boolean deleteBackup)
             throws IOException {
-        File dstFile = new File(getChildAbsolutePath(parentFolder, filename));
-        if (fileList.contains(dstFile)) {
-            File srcFile = new File(getChildAbsolutePath(this.backupFolder.toString(), filename));
-            Files.copy(srcFile.toPath(),dstFile.toPath(),StandardCopyOption.REPLACE_EXISTING);
+        String originalFileStr = getChildAbsolutePath(parentFolder, filename);
+        if (fileList.containsKey(originalFileStr)) {
+            Path bkpFilePath = (new File(fileList.get(originalFileStr))).toPath();
+            Files.copy( bkpFilePath,
+                        (new File(originalFileStr)).toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
             if (deleteBackup) {
-                Files.delete(srcFile.toPath());
-                fileList.remove(srcFile);
+                Files.delete(bkpFilePath);
+                fileList.remove(originalFileStr);
             }
         }
         return this;
     }
+    /**
+     * The same as calling rollBack(parentFolder,filename,true);
+     * @param parentFolder
+     * @param filename
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger rollBack(String parentFolder, String filename)
             throws IOException {
         return rollBack(parentFolder,filename,true);
     }
+    /**
+     * The same as calling rollBack(defaultSrcFolder,filename,deleteBackup);
+     * @param filename
+     * @param deleteBackup
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger rollBack(String filename, boolean deleteBackup)
             throws IOException {
-        return rollBack(this.defaultSourceDIR.toString(),filename,deleteBackup);
+        return rollBack(this.defaultSourceFolder,filename,deleteBackup);
     }
+    /** 
+     * The same as calling rollBack(defaultSrcFolder,filename,true);
+     * @param filename
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger rollBack(String filename)
             throws IOException {
-        return rollBack(this.defaultSourceDIR.toString(),filename,true);
+        return rollBack(this.defaultSourceFolder,filename,true);
     }
+    /**
+     * It will roll back or restore all the backup files.
+     * @param deleteBackup
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger rollBackAll(boolean deleteBackup)
             throws IOException {
-        for (File f: this.fileList)
-            rollBack(f.getParent(),f.getName(),deleteBackup);
+        for (String key: fileList.keySet()) {
+            File originalFile = new File(key);
+            rollBack(originalFile.getParent(), originalFile.getName(), deleteBackup);
+        }
         if (deleteBackup) {
-            Files.delete(this.backupFolder.toPath());
+            Files.delete((new File(this.backupFolder)).toPath());
             this.isBackupFolderAvailable = false;
         }
         return this;
     }
+    /**
+     * The same as calling rollBackAll(true);
+     * @return
+     * @throws IOException 
+     */
     public RollBackManger rollBackAll()
             throws IOException {
         return rollBackAll(true);
     }
 
-    @Override
-    protected void finalize()
-            throws Throwable{
-        super.finalize();
-//        System.out.println("Finalizing rbm: " + fileList.size());
-        for (File f: this.fileList) {
-//            System.out.println("Removing" + f);
-            Files.delete(f.toPath());
-            fileList.remove(f);
-        }
-        Files.delete(this.backupFolder.toPath());
-        this.isBackupFolderAvailable = false;
-    }
-
+    /**
+     * Turns the path that is provided as a string into an absolute path.
+     * @param path
+     * @return 
+     */
     public static String turn2AbsolutePath (String path) {
         return (new File(path)).getAbsolutePath();
     }
+    /**
+     * Returns the absolute path to the child within the provided parent folder.
+     * Neither needs to be absolute.
+     * @param parentPath
+     * @param childName
+     * @return 
+     */
     public static String getChildAbsolutePath (String parentPath, String childName) {
         return (turn2AbsolutePath(parentPath) + File.separator + childName);
     }
 
 
 
-
+    /**
+     * Just testing
+     * @param args 
+     */
     public static void main(String[] args) {
         File f = new File("C:\\test\\txt.txt");
         System.out.println(f.getParent());

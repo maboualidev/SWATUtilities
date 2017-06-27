@@ -44,13 +44,13 @@ public class UnzipUtility {
                 String filePath = destDirectory + File.separator + entry.getName();
                 if (verbose)
                     System.out.println("- Deflating " + filePath);
-                if (!entry.isDirectory()) {
-                    // if the entry is a file, extracts it
-                    extractFile(zipIn, filePath);
-                } else {
+                if (entry.isDirectory()) {
                     // if the entry is a directory, make the directory
                     File dir = new File(filePath);
                     dir.mkdir();
+                } else {
+                    // if the entry is a file, extracts it
+                    extractFile(zipIn, filePath);
                 }
                 zipIn.closeEntry();
                 entry = zipIn.getNextEntry();
